@@ -92,7 +92,9 @@ class VideoDataset(Dataset):
 def make_tranforms(image_transforms):
     if isinstance(image_transforms, ListConfig):
         image_transforms = [instantiate_from_config(tt) for tt in image_transforms]
+
     image_transforms.extend([transforms.ToTensor(),
+                             transforms.Lambda(lambda x: x.repeat(3, 1, 1) ),
                                 transforms.Lambda(lambda x: rearrange(x * 2. - 1., 'c h w -> h w c'))])
     image_transforms = transforms.Compose(image_transforms)
     return image_transforms
@@ -293,6 +295,7 @@ def hf_dataset(
         return processed
 
     ds.set_transform(pre_process)
+    print(ds)
     return ds
 
 class TextOnly(Dataset):
